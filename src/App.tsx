@@ -4,7 +4,7 @@ import './App.css';
 import { MaskEditor } from './components/MaskEditor/MaskEditor';
 import { toMask } from './utils/MaskUtils';
 import { AppShell, Button, Divider, FileButton, Group, Slider, Stack, Text, rem } from '@mantine/core';
-import { Dropzone, IMAGE_MIME_TYPE, MIME_TYPES } from '@mantine/dropzone';
+import { Dropzone, MIME_TYPES } from '@mantine/dropzone';
 import { IconPhoto, IconUpload, IconX } from '@tabler/icons-react';
 
 function App() {
