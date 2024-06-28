@@ -10,6 +10,7 @@ function App() {
   const canvas = useRef<HTMLCanvasElement>();
   const [opened, { toggle }] = useDisclosure();
   const [file, setFile] = useState<File | null>(null);
+  const [cursorSize, setCursorSize] = useState<number>(10);
 
   return (
     <AppShell header={{ height: 60 }} aside={{ width: '20%', breakpoint: 'sm' }} padding="md">
@@ -21,7 +22,7 @@ function App() {
       </AppShell.Header>
 
       <AppShell.Main>
-        <MaskEditor src="/cat2.jpeg" canvasRef={canvas} />
+        <MaskEditor src="/cat2.jpeg" canvasRef={canvas} cursorSize={cursorSize} />
       </AppShell.Main>
 
       <AppShell.Aside p={10}>
@@ -32,10 +33,15 @@ function App() {
             <Slider
               radius="sm"
               marks={[
-                { value: 20, label: '20%' },
-                { value: 50, label: '50%' },
-                { value: 80, label: '80%' },
+                { value: 5, label: '20%' },
+                { value: 15, label: '50%' },
+                { value: 25, label: '80%' },
               ]}
+              min={2}
+              max={30}
+              onChange={(val) => {
+                setCursorSize(val);
+              }}
             />
             <Divider mt={10} />
             <Button
