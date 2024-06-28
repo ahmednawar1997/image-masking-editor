@@ -48,7 +48,7 @@ export const MaskEditor: React.FC<MaskEditorProps> = (props: MaskEditorProps) =>
   const [context, setContext] = React.useState<CanvasRenderingContext2D | null>(null);
   const [maskContext, setMaskContext] = React.useState<CanvasRenderingContext2D | null>(null);
   const [cursorContext, setCursorContext] = React.useState<CanvasRenderingContext2D | null>(null);
-  const [size, setSize] = React.useState<{ x: number; y: number }>({ x: 800, y: 600 });
+  const [size, setSize] = React.useState<{ x: number; y: number }>({ x: 700, y: 500 });
 
   React.useLayoutEffect(() => {
     // initialize canvases
