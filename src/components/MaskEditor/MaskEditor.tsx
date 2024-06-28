@@ -48,63 +48,45 @@ export const MaskEditor: React.FC<MaskEditorProps> = (props: MaskEditorProps) =>
   const [context, setContext] = React.useState<CanvasRenderingContext2D | null>(null);
   const [maskContext, setMaskContext] = React.useState<CanvasRenderingContext2D | null>(null);
   const [cursorContext, setCursorContext] = React.useState<CanvasRenderingContext2D | null>(null);
-  const [size, setSize] = React.useState<{ x: number; y: number }>({ x: 256, y: 256 });
+  const [size, setSize] = React.useState<{ x: number; y: number }>({ x: 800, y: 600 });
 
   React.useLayoutEffect(() => {
-    if (canvas.current && !context) {
-      console.log('first');
+    // initialize canvases
+    if (canvas.current) {
       const ctx = (canvas.current as HTMLCanvasElement).getContext('2d');
       setContext(ctx);
     }
-  }, [canvas]);
 
-  React.useLayoutEffect(() => {
-    console.log(context);
-    if (maskCanvas.current && !context) {
-      console.log('second');
-
+    if (maskCanvas.current) {
       const ctx = (maskCanvas.current as HTMLCanvasElement).getContext('2d');
       if (ctx) {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, size.x, size.y);
       }
       setMaskContext(ctx);
+
+      //pass mask canvas to parent
+      props.canvasRef.current = maskCanvas.current;
     }
-  }, [maskCanvas]);
 
-  React.useLayoutEffect(() => {
-    if (cursorCanvas.current && !context) {
-      console.log('third');
-
+    if (cursorCanvas.current) {
       const ctx = (cursorCanvas.current as HTMLCanvasElement).getContext('2d');
       setCursorContext(ctx);
     }
-  }, [cursorCanvas]);
+  }, []);
 
   React.useEffect(() => {
     if (src && context) {
-      console.log('fourth');
+      const image = new Image();
+      image.src = src;
 
-      const img = new Image();
-      img.src = src;
-      img.onload = (evt) => {
-        setSize({ x: img.width, y: img.height });
-        context?.drawImage(img, 0, 0);
-        console.log('load image', img, context);
+      image.onload = (evt) => {
+        redrawImage(image, context);
       };
     }
   }, [src, context]);
 
-  // Pass mask canvas up to parent
-  React.useLayoutEffect(() => {
-    if (props.canvasRef) {
-      props.canvasRef.current = maskCanvas.current;
-    }
-  }, [maskCanvas]);
-
   React.useEffect(() => {
-    console.log('listeners');
-
     const listener = (evt: MouseEvent) => {
       if (cursorContext) {
         cursorContext.clearRect(0, 0, size.x, size.y);
@@ -170,6 +152,18 @@ export const MaskEditor: React.FC<MaskEditorProps> = (props: MaskEditorProps) =>
     },
     [maskContext]
   );
+
+  const redrawImage = React.useCallback((img: HTMLImageElement, ctx: CanvasRenderingContext2D) => {
+    var canvas = ctx.canvas;
+    var hRatio = canvas.width / img.width;
+    var vRatio = canvas.height / img.height;
+    var ratio = Math.min(hRatio, vRatio);
+    var centerShift_x = (canvas.width - img.width * ratio) / 2;
+    var centerShift_y = (canvas.height - img.height * ratio) / 2;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, img.width, img.height, centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
+  }, []);
+
   React.useEffect(() => replaceMaskColor(maskColor, false), [maskColor]);
 
   return (
@@ -214,19 +208,6 @@ export const MaskEditor: React.FC<MaskEditorProps> = (props: MaskEditorProps) =>
           className="react-mask-editor-cursor-canvas"
         />
       </div>
-      <button
-        onClick={() => {
-          const img = new Image();
-          img.src = src;
-          img.onload = (evt) => {
-            setSize({ x: img.width, y: img.height });
-            context?.drawImage(img, 0, 0);
-            console.log('load image', img, context);
-          };
-        }}
-      >
-        Redraw
-      </button>
     </div>
   );
 };
