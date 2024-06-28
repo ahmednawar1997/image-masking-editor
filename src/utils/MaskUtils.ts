@@ -18,14 +18,28 @@ export const toMask = (canvas: HTMLCanvasElement) => {
       ctx?.putImageData(imageData, 0, 0);
     }
   
-    const dataUrl = canvas.toDataURL();
+    const dataUrl = canvas.toDataURL("image/png");
     for (var i = 0; i < imageData?.data.length; i++) {
       imageData.data[i] = origData[i];
     }
     ctx.putImageData(imageData, 0, 0);
+
+    download(dataUrl);
   
     return dataUrl;
   }
+
+  function download(dataUrl: string){
+
+    var link = document.createElement('a');
+    link.download = `mask_${generateRandomString()}.png`;
+    link.href = dataUrl;
+    link.click();
+  }
+
+  const generateRandomString = function(){
+    return Math.random().toString(20).substr(2, 6)
+    }
   
   export const hexToRgb = (color: string) => {
     var parts = color.replace("#", "").match(/.{1,2}/g);
